@@ -1,7 +1,7 @@
 # Countdown Numbers Round
 
 ## Overview
-These are various implementations of the Numbers Round from the game show "Countdown". Players aim to reach a target number using a combination of randomly selected numbers through arithmetic operations.
+These are various implementations of the Numbers Round from the game show "Countdown". Players aim to reach a target number using a combination of randomly selected numbers and arithmetic operations.
 
 ## Rules
 - The game involves manipulating a combination of six numbers with standard operations (add, sub, mul, div) to reach a randomly generated target number.
