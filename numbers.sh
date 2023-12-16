@@ -57,10 +57,10 @@ validate_expression() {
 }
 
 echo "Welcome to the Numbers Game!"
-read -p "How many large numbers (0 to 4)? " large_count
+read -p "How many large numbers? " large_count
 
 if ! [[ $large_count =~ ^[0-4]$ ]]; then
-    echo "Invalid input. Please enter a number between 0 and 4."
+    echo "Invalid input. Please enter a number between 0 and 6."
     exit 1
 fi
 
