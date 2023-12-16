@@ -20,7 +20,7 @@ This program is a Python implementation of the Numbers Round from the game show 
 
 ## Running the Game
 1. Clone or download this repository.
-2. Run `python numbers_game.py` in your terminal.
+2. Run `python main.py` in your terminal.
 3. Follow the on-screen instructions to play.
 
 ## License
