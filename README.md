@@ -1,4 +1,4 @@
-# Numbers Game
+# Countdown Numbers Round
 
 ## Overview
 These are various implementations of the Numbers Round from the game show "Countdown". Players aim to reach a target number using a combination of randomly selected numbers through arithmetic operations.
