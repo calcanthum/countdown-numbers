@@ -3,6 +3,8 @@ import Control.Monad
 import Text.Read (readMaybe)
 import Data.Char (isSpace)
 import Data.Maybe (mapMaybe)
+import Debug.Trace
+import Data.Ratio ((%))
 
 fisherYatesShuffle :: RandomGen g => [a] -> g -> [a]
 fisherYatesShuffle lst gen = go (length lst - 1) lst gen
@@ -23,13 +25,14 @@ generateGame largeCount gen
     gameNumbers = largeNumbers ++ smallNumbers
     (targetNumber, _) = randomR (100, 999) gen
 
-evaluateRPN :: String -> [Int] -> Either String Int
+evaluateRPN :: String -> [Int] -> Either String Rational
 evaluateRPN expression gameNumbers = evaluateRPN' (words expression) []
   where
     evaluateRPN' [] [result] = Right result
     evaluateRPN' [] _ = Left "Invalid RPN expression: Incorrect number of elements remaining."
-    evaluateRPN' (token:tokens) stack
-      | token `elem` ["+", "-", "*", "/"] =
+    evaluateRPN' (token:tokens) stack = trace ("Debug: Processing token: " ++ token ++ ", Stack: " ++ show stack) $
+      case token `elem` ["+", "-", "*", "/"] of
+        True ->
           if length stack < 2 then
             Left "Invalid RPN expression: not enough operands."
           else
@@ -38,9 +41,9 @@ evaluateRPN expression gameNumbers = evaluateRPN' (words expression) []
                         "+" -> (+)
                         "-" -> (-)
                         "*" -> (*)
-                        "/" -> div
+                        "/" -> (/)
                 in evaluateRPN' tokens (op a b : rest)
-      | otherwise =
+        False ->
           case readMaybe (filter (not . isSpace) token) :: Maybe Int of
             Just number -> 
               if number `notElem` gameNumbers then
@@ -48,18 +51,22 @@ evaluateRPN expression gameNumbers = evaluateRPN' (words expression) []
               else if count number (map (read . filter (not . isSpace)) (words expression) :: [Int]) > count number gameNumbers then
                 Left $ "Invalid expression: Number " ++ show number ++ " used more times than it appears in the game."
               else
-                evaluateRPN' tokens (number : stack)
-            Nothing -> Left $ "Invalid token in expression: '" ++ token ++ "' is not a number."
+                evaluateRPN' tokens ((fromIntegral number) % 1 : stack)
+            Nothing -> 
+                let filteredToken = filter (not . isSpace) token
+                in trace ("Debug: Failed to parse token as number: " ++ token ++ ", Filtered Token: " ++ filteredToken) 
+                    Left $ "Invalid token in expression: '" ++ token ++ "' is not a number."
 
     count x lst = length . filter (==x) $ lst
 
-calculatePoints :: Int -> Int -> Int
+
+calculatePoints :: Int -> Rational -> Int
 calculatePoints target result
   | difference == 0 = 10
   | difference <= 5 = 7
   | difference <= 10 = 5
   | otherwise = 0
-  where difference = abs (target - result)
+  where difference = abs (target - (round result :: Int))
 
 main :: IO ()
 main = do
