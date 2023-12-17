@@ -8,7 +8,7 @@ These are various implementations of the Numbers Round from the game show "Count
 - Players can choose how many "large numbers" (25, 50, 75, 100) are included; the rest will be "small numbers" (two sets of numbers from 1 to 10).
 - The target number is a random integer between 100 and 999.
 - Each number can be used at most once in the solution.
-- Players input their solutions in Reverse Polish Notation (Python + Rust) or infix (bash).
+- Players input their solutions in Reverse Polish Notation (RPN aka postfix).
 
 ## Scoring
 - Exact match with the target number: 10 points.
