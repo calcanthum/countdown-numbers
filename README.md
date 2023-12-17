@@ -16,5 +16,11 @@ These are various implementations of the Numbers Round from the game show "Count
 - Difference of 6 to 10: 5 points.
 - Difference greater than 10: 0 points.
 
+## Versions
+- Python
+- Bash
+- Rust
+- Haskell (currently broken)
+
 ## License
 This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](LICENSE.md) file for details.
