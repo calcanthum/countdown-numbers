@@ -26,39 +26,52 @@ generateGame largeCount gen
     (targetNumber, _) = randomR (100, 999) gen
 
 evaluateRPN :: String -> [Int] -> Either String Rational
-evaluateRPN expression gameNumbers = evaluateRPN' (words expression) []
+evaluateRPN expression gameNumbers = trace ("Initial expression: " ++ expression) $ evaluateRPN' (words expression) []
   where
-    evaluateRPN' [] [result] = Right result
+    evaluateRPN' [] [result] = trace "Final result: " $ Right result
     evaluateRPN' [] _ = Left "Invalid RPN expression: Incorrect number of elements remaining."
-    evaluateRPN' (token:tokens) stack = trace ("Debug: Processing token: " ++ token ++ ", Stack: " ++ show stack) $
-      case token `elem` ["+", "-", "*", "/"] of
-        True ->
-          if length stack < 2 then
-            Left "Invalid RPN expression: not enough operands."
-          else
-            let (b:a:rest) = stack
-                op = case token of
-                        "+" -> (+)
-                        "-" -> (-)
-                        "*" -> (*)
-                        "/" -> (/)
-                in evaluateRPN' tokens (op a b : rest)
-        False ->
-          case readMaybe (filter (not . isSpace) token) :: Maybe Int of
-            Just number -> 
-              if number `notElem` gameNumbers then
-                Left $ "Invalid expression: Number " ++ show number ++ " is not in this round."
-              else if count number (map (read . filter (not . isSpace)) (words expression) :: [Int]) > count number gameNumbers then
-                Left $ "Invalid expression: Number " ++ show number ++ " used more times than it appears in the game."
-              else
-                evaluateRPN' tokens ((fromIntegral number) % 1 : stack)
-            Nothing -> 
-                let filteredToken = filter (not . isSpace) token
-                in trace ("Debug: Failed to parse token as number: " ++ token ++ ", Filtered Token: " ++ filteredToken) 
-                    Left $ "Invalid token in expression: '" ++ token ++ "' is not a number."
+    evaluateRPN' (token:tokens) stack =
+      trace ("Current token: " ++ token ++ ", Stack: " ++ show stack) $
+      case parseToken token of
+        Left err -> Left err
+        Right parsedToken ->
+          case parsedToken of
+            Number n -> processNumber n tokens stack
+            Operator op -> processOperator op tokens stack
 
+    parseToken :: String -> Either String Token
+    parseToken tkn
+      | tkn `elem` ["+", "-", "*", "/"] = Right $ Operator tkn
+      | otherwise = case readMaybe (filter (not . isSpace) tkn) :: Maybe Int of
+          Just num -> Right $ Number num
+          Nothing -> Left $ "Invalid token in expression: '" ++ tkn ++ "' is not a number."
+
+    processNumber :: Int -> [String] -> [Rational] -> Either String Rational
+    processNumber number tokens stack
+      | number `notElem` gameNumbers = Left $ "Invalid expression: Number " ++ show number ++ " is not in this round."
+      | count number (mapMaybe readNumber (words expression)) > count number gameNumbers = 
+          Left $ "Invalid expression: Number " ++ show number ++ " used more times than it appears in the game."
+      | otherwise = evaluateRPN' tokens ((fromIntegral number) % 1 : stack)
+
+    processOperator :: String -> [String] -> [Rational] -> Either String Rational
+    processOperator op tokens stack
+      | length stack < 2 = Left "Invalid RPN expression: not enough operands."
+      | otherwise =
+          let (b:a:rest) = stack
+              operation = case op of
+                            "+" -> (+)
+                            "-" -> (-)
+                            "*" -> (*)
+                            "/" -> (/)
+          in evaluateRPN' tokens (operation a b : rest)
+
+    count :: Int -> [Int] -> Int
     count x lst = length . filter (==x) $ lst
 
+    readNumber :: String -> Maybe Int
+    readNumber str = readMaybe $ filter (not . isSpace) str
+
+data Token = Number Int | Operator String
 
 calculatePoints :: Int -> Rational -> Int
 calculatePoints target result
@@ -95,7 +108,7 @@ askForSolution targetNumber gameNumbers = do
   userExpression <- getLine
   case evaluateRPN userExpression gameNumbers of
     Right result -> do
-      putStrLn $ "Result of Expression: " ++ show result
+      putStrLn $ "Submitted solution: " ++ show result
       let points = calculatePoints targetNumber result
       putStrLn $ "You scored " ++ show points ++ " points!"
     Left error -> putStrLn error >> askForSolution targetNumber gameNumbers
