@@ -1,7 +1,7 @@
 # Countdown Numbers Round
 
 ## Overview
-These are various implementations of the Numbers Round from the game show "Countdown". Players aim to reach a target number using a combination of randomly selected numbers and arithmetic operations.
+These are various implementations of the Numbers Round from the game show "Countdown". Players aim to reach a target number using a combination of randomly selected numbers and arithmetic operations. This is a personal study project to explore how different languages handle the same things (stacks + random numbers).
 
 ## Rules
 - Only standard operations (addition, subtraction, multiplication, division) are allowed.
@@ -16,9 +16,10 @@ These are various implementations of the Numbers Round from the game show "Count
 - Difference of 6 to 10: 5 points.
 - Difference greater than 10: 0 points.
 
-## Versions
+## Version Notes
 - Python
 - Bash
+ - Had to modulo 900 and offset by 100 to get the right range. Probability skew to the lower numbers as a result.
 - Rust
 - Haskell
 
