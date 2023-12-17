@@ -20,7 +20,7 @@ These are various implementations of the Numbers Round from the game show "Count
 - Python
 - Bash
 - Rust
-- Haskell (currently broken)
+- Haskell
 
 ## License
 This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](LICENSE.md) file for details.
