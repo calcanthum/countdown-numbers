@@ -56,6 +56,28 @@ validate_expression() {
     done
 }
 
+calculate_rpn() {
+    local stack=()
+    local expression=$1
+    local token
+    for token in $expression; do
+        case $token in
+            +|-|'*'|/)
+                local a=${stack[-1]}
+                stack=( "${stack[@]::${#stack[@]}-1}" )
+                local b=${stack[-1]}
+                stack=( "${stack[@]::${#stack[@]}-1}" )
+                local result=$(echo "scale=2; $b $token $a" | bc)
+                stack+=("$result")
+                ;;
+            *)
+                stack+=("$token")
+                ;;
+        esac
+    done
+    echo "${stack[-1]}"
+}
+
 echo "Welcome to the Numbers Game!"
 read -p "How many large numbers? " large_count
 
@@ -65,20 +87,17 @@ if ! [[ $large_count =~ ^[0-6]$ ]]; then
 fi
 
 game_numbers=($(generate_numbers $large_count))
-
-# Generate a random number between 100 and 999 using modulo to limit range.
 target_number=$((RANDOM % 900 + 100))
 
 echo "Target Number: $target_number"
 echo "Game Numbers: ${game_numbers[*]}"
 
 while true; do
-    read -p "Enter your solution: " user_expression
+    read -p "Enter your RPN solution: " user_expression
 
     if validate_expression "$user_expression" "${game_numbers[@]}"; then
-    
-        result=$(bc <<< "$user_expression")
-        echo "Result of Expression: $result"
+        result=$(calculate_rpn "$user_expression")
+        echo "Result of RPN Expression: $result"
 
         points=$(calculate_points $target_number $result)
         echo "You scored $points points!"
