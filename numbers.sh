@@ -65,6 +65,8 @@ if ! [[ $large_count =~ ^[0-6]$ ]]; then
 fi
 
 game_numbers=($(generate_numbers $large_count))
+
+# Generate a random number between 100 and 999 using modulo to limit range.
 target_number=$((RANDOM % 900 + 100))
 
 echo "Target Number: $target_number"
