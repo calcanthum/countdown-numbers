@@ -19,7 +19,7 @@ These are various implementations of the Numbers Round from the game show "Count
 ## Version Notes
 - Python
 - Bash
- - Had to modulo 900 and offset by 100 to get the right range. Probability skew to the lower numbers as a result.
+  - Had to modulo 900 and offset by 100 to get the right range. Probability skew to the lower numbers as a result.
 - Rust
 - Haskell
 
